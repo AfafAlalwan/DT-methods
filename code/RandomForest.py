@@ -1,19 +1,18 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-import NaiveTree
+from NaiveTree import NaiveTree
 import DTArr
 
 class Forest(RandomForestClassifier):
-    def __init__(self, custom_trees, n_estimators=100, max_depth=2, min_samples_split=2,
+    def __init__(self, n_estimators=100, max_depth=2, min_samples_split=2,
                  tree_method='naive', **kwargs):
         '''constructor'''
         super().__init__(n_estimators=n_estimators, **kwargs)
-        self.custom_trees = custom_trees
+        # self.custom_trees = custom_trees #not sure?
         self.tree_method = tree_method
+        self.custom_trees = []
     
     def fit(self, x,y):
-        # Create new list to store the custom trees
-        self.custom_trees = []
 
         # Dictionary of Methods 
         method_to_class = {
@@ -35,6 +34,8 @@ class Forest(RandomForestClassifier):
 
         self.estimators = self.custom_trees
         self.n_estimators = len(self.custom_trees)
-        self.fit(x,y)
+        # self.fit(x,y)
         
+
+    #TODO: predict method
 
