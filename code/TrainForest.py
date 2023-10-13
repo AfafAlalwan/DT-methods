@@ -1,15 +1,30 @@
-from RandomForest import Forest
+#!/usr/bin/env python3
 
-def fitModels(x,y):
-    #TODO: split x and y if not splitted
-    forest = Forest(tree_method='naive',n_estimators=25,n_jobs=8,max_depth=5)
-    testModel(x,y,forest)
+import sys
+import numpy as np
 
-def testModel(x,y,model):
-    #fitting
+# sys.path.ap pend('/home/afaf/Desktop/Github Projects/DT-methods')  # Replace with the root directory of your project
+# sys.path.append("../../")
+from FitModels import FitModels
 
-    #testing
+def readFile(path):
+    f = open(path, 'r')
+    X = []
+    Y = []
+    for row in f:
+        entries = row.strip().split(",")
+        y = int(entries[-1])  # Store the last column as Y
+        x = [int(e) for e in entries[:-1]]  # Store the rest of the columns as X
 
-    #accuracy
-    pass
+        X.append(x)
+        Y.append([y])
 
+    return np.array(X).astype(dtype=np.int32), np.array(Y).astype(dtype=np.int32)
+
+def main(argv):
+	X,Y = readFile("/home/afaf/Desktop/Github Projects/DT-methods/data/adult/adult.data")
+
+	FitModels(X,Y)
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
