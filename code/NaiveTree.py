@@ -1,4 +1,4 @@
-from Node import Node
+from .Node import Node
 import numpy as np
 import random 
 

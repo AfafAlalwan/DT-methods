@@ -3,9 +3,10 @@
 import sys
 import numpy as np
 
-# sys.path.ap pend('/home/afaf/Desktop/Github Projects/DT-methods')  # Replace with the root directory of your project
-# sys.path.append("../../")
-from FitModels import FitModels
+sys.path.insert(0, '/home/afaf/Desktop/Github Projects/Research')
+
+from code.FitModels import FitModels
+
 
 def readFile(path):
     f = open(path, 'r')

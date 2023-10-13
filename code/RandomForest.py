@@ -2,8 +2,8 @@ import numpy as np
 from numpy import ndarray
 # from sklearn._typing import ArrayLike, MatrixLike
 from sklearn.ensemble import RandomForestClassifier
-from NaiveTree import NaiveTree
-import DTArr
+from code.NaiveTree import NaiveTree
+from code.DTArr import DTArr
 from sklearn.base import is_classifier
 
 class Forest(RandomForestClassifier):
