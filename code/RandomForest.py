@@ -31,7 +31,7 @@ class Forest(RandomForestClassifier):
 
         for _ in range(self.n_estimators):
             custom_tree = tree_class() #TODO: write params to customize
-            print(f"{x.shape} and {y.shape}")
+            # print(f"{x.shape} and {y.shape}")
             custom_tree.fit(X=x,Y=y)
             self.custom_trees.append(custom_tree)
 
@@ -41,7 +41,6 @@ class Forest(RandomForestClassifier):
         # self.fit(x,y)
         
 
-    #TODO: predict method
     def predict(self, X):
         # Check if this is a binary classification problem.
         # If it's binary classification, each tree should output class probabilities.
@@ -64,29 +63,14 @@ class Forest(RandomForestClassifier):
             # Here, you can call your custom predict method for each tree.
             tree_prediction = tree.predict(X)
 
-            print("Shape of tree_prediction:", tree_prediction.shape)
-            print(tree_prediction)
-            print(is_binary_classification)    
+            # print("Shape of tree_prediction:", tree_prediction.shape)
+            # print(tree_prediction)
+            # print(is_binary_classification)    
             is_binary_classification = False
 
             predictions += tree_prediction
             final_predictions = predictions / self.n_estimators
-
-        #     # Combine the predictions from each tree.
-        #     if is_binary_classification:
-        #         # For binary classification, we accumulate class probabilities.
-        #         predictions += tree_prediction
-        #     else:
-        #         # For multi-class classification or regression, we can sum up the predictions.
-        #         predictions += tree_prediction
-
-        # # Calculate the final prediction as the average (for regression) or the class with the highest probability (for classification).
-        # if is_binary_classification:
-        #     # Normalize probabilities and assign the class with the highest probability.
-        #     predictions /= self.n_estimators
-        #     final_predictions = np.argmax(predictions, axis=1)
-        # else:
-        #     # For regression or multi-class classification, calculate the average prediction.
-        #     final_predictions = predictions / self.n_estimators
+            final_predictions = final_predictions.reshape(-1,1)
+            final_predictions = np.round(final_predictions).astype(int)
 
         return final_predictions

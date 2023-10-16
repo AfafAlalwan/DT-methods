@@ -3,7 +3,7 @@
 import sys
 import numpy as np
 
-sys.path.insert(0, '/home/afaf/Desktop/Github Projects/Research')
+sys.path.insert(0, '/home/afaf/Desktop/Github Projects/DT-methods')
 
 from code.FitModels import FitModels
 

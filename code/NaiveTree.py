@@ -3,7 +3,7 @@ import numpy as np
 import random 
 
 class NaiveTree:
-    def __init__(self, min_samples_split=2, max_depth=2, random_split=False):
+    def __init__(self, min_samples_split=2, max_depth=2, random_split=True):
         ''' constructor '''
         
         # initialize the root of the tree 
@@ -21,12 +21,7 @@ class NaiveTree:
         
         # split until stopping conditions are met
         if num_samples>=self.min_samples_split and curr_depth<=self.max_depth:
-            if self.random_split:
-                feature_indices = random.sample(range(num_features), random.randint(1, num_features))
-                best_split = self.get_best_split_random(dataset, num_samples, feature_indices)
-                pass
-            else:
-                best_split = self.get_best_split(dataset, num_samples, num_features)
+            best_split = self.get_best_split(dataset, num_samples, num_features)
 
             # check if information gain is positive
             if best_split["info_gain"]>0:
@@ -47,11 +42,22 @@ class NaiveTree:
         ''' function to find the best split '''
         
         # dictionary to store the best split
-        best_split = {}
-        max_info_gain = -float("inf")
-        
+        # best_split = {}
+        # max_info_gain = -float("inf")
+        best_split = {
+            "feature_index": None,
+            "threshold": None,
+            "dataset_left": None,
+            "dataset_right": None,
+            "info_gain": -float("inf")
+        } 
+        if self.random_split:
+            selected_feature_indices = np.random.choice(num_features, num_samples,replace=True)
+        else:
+            selected_feature_indices = range(num_features)
+
         # loop over all the features
-        for feature_index in range(num_features):
+        for feature_index in selected_feature_indices:
             feature_values = dataset[:, feature_index]
             possible_thresholds = np.unique(feature_values)
             # loop over all the feature values present in the data
@@ -64,46 +70,13 @@ class NaiveTree:
                     # compute information gain
                     curr_info_gain = self.information_gain(y, left_y, right_y, "gini")
                     # update the best split if needed
-                    if curr_info_gain>max_info_gain:
+                    if curr_info_gain>best_split["info_gain"]:
                         best_split["feature_index"] = feature_index
                         best_split["threshold"] = threshold
                         best_split["dataset_left"] = dataset_left
                         best_split["dataset_right"] = dataset_right
                         best_split["info_gain"] = curr_info_gain
-                        max_info_gain = curr_info_gain
-                        
-        # return best split
-        return best_split
-    
-    def get_best_split_random(self, dataset, num_samples, feature_indices):
-        ''' function to find the best split for a random feature'''
-        
-        # dictionary to store the best split
-        best_split = {}
-        max_info_gain = -float("inf")
-        
-        # Randomly select a feature from feature_indicies
-        feature_index = random.choice(feature_indices)
-        feature_values = dataset[:, feature_index]
-        possible_thresholds = np.unique(feature_values)
-      
-        # loop over all the feature values present in the data
-        for threshold in possible_thresholds:
-            # get current split
-            dataset_left, dataset_right = self.split(dataset, feature_index, threshold)
-            # check if childs are not null
-            if len(dataset_left)>0 and len(dataset_right)>0:
-                y, left_y, right_y = dataset[:, -1], dataset_left[:, -1], dataset_right[:, -1]
-                # compute information gain
-                curr_info_gain = self.information_gain(y, left_y, right_y, "gini")
-                # update the best split if needed
-                if curr_info_gain>max_info_gain:
-                    best_split["feature_index"] = feature_index
-                    best_split["threshold"] = threshold
-                    best_split["dataset_left"] = dataset_left
-                    best_split["dataset_right"] = dataset_right
-                    best_split["info_gain"] = curr_info_gain
-                    max_info_gain = curr_info_gain
+                        # max_info_gain = curr_info_gain
                         
         # return best split
         return best_split
