@@ -7,7 +7,7 @@ from code.DTArr import DTArr
 from sklearn.base import is_classifier
 
 class Forest(RandomForestClassifier):
-    def __init__(self, n_estimators=100, max_depth=2, min_samples_split=2,
+    def __init__(self, n_estimators=100, maxDepth=2, min_samples_split=2,
                  tree_method='naive', **kwargs):
         '''constructor'''
         super().__init__(n_estimators=n_estimators, **kwargs)
@@ -30,7 +30,8 @@ class Forest(RandomForestClassifier):
             raise ValueError("Invalid tree method specified.")
 
         for _ in range(self.n_estimators):
-            custom_tree = tree_class() #TODO: write params to customize
+            print(f"max depth {self.maxDepth} and min samples = {self.min_samples_split} ")
+            custom_tree = tree_class(max_depth=self.maxDepth, min_samples_split=self.min_samples_split ) #TODO: write params to customize
             # print(f"{x.shape} and {y.shape}")
             custom_tree.fit(X=x,Y=y)
             self.custom_trees.append(custom_tree)
