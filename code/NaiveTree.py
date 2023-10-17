@@ -11,6 +11,7 @@ class NaiveTree:
         # stopping conditions
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
+        
         self.random_split = random_split
 
     def build_tree(self, dataset, curr_depth=0):
