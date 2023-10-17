@@ -2,7 +2,6 @@ from .RandomForest import Forest
 import timeit
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
-import time
 import numpy as np 
 
 def FitModels(x_train,y_train,x_test=None,y_test=None,createTest=False):
@@ -11,23 +10,20 @@ def FitModels(x_train,y_train,x_test=None,y_test=None,createTest=False):
         x_train,x_test,y_train,y_test = train_test_split(x_train,y_train,train_size=0.2)
         createTest = True
 
-    if createTest:
+    if createTest:#TODO: specify where to save these csv files
         train_output = "train.csv"
         test_output = "test.csv"
-
-        # Save x_train and y_train to train.csv
         train_data = np.column_stack((x_train, y_train))
-        np.savetxt(train_output, train_data, delimiter=',', header='Feature1,Feature2,...,Target', comments='')
+        np.savetxt(train_output, train_data, delimiter=',')
 
-        # Save x_test and y_test to test.csv
         test_data = np.column_stack((x_test, y_test))
-        np.savetxt(test_output, test_data, delimiter=',', header='Feature1,Feature2,...,Target', comments='')
+        np.savetxt(test_output, test_data, delimiter=',')
 
         print("Data saved to CSV files.")
 
-    # forest = Forest(tree_method='naive',n_estimators=10,n_jobs=8,max_depth=5)
+    #TODO: decide how many forests and choose the best accuracy one to generate it in C
     testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='naive',n_estimators=5,n_jobs=8,maxDepth=5, min_samples_split=3), name="RF")
+              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=5, min_samples_split=3), name="RF")
     testModel(x_train,y_train,x_test,y_test,
               Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF2")
     testModel(x_train,y_train,x_test,y_test,
@@ -57,7 +53,7 @@ def testModel(x_train,y_train,x_test,y_test,model,name):
     print("Total time: " + str(end - start) + " ms")
     print("Throughput: " + str(len(x_test) / (float(end - start)*1000)) + " #elem/ms")
 
-    output = name + ".csv"
+    output = name + ".csv" #TODO: specify where to save it 
     np.savetxt(output, y_pred, delimiter=",", fmt="%d")
     #accuracy
     accuracy = accuracy_score(y_test, y_pred)

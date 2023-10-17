@@ -1,6 +1,5 @@
 from .Node import Node
 import numpy as np
-import random 
 
 class NaiveTree:
     def __init__(self, min_samples_split=2, max_depth=2, random_split=True):
@@ -42,8 +41,6 @@ class NaiveTree:
         ''' function to find the best split '''
         
         # dictionary to store the best split
-        # best_split = {}
-        # max_info_gain = -float("inf")
         best_split = {
             "feature_index": None,
             "threshold": None,
@@ -76,9 +73,7 @@ class NaiveTree:
                         best_split["dataset_left"] = dataset_left
                         best_split["dataset_right"] = dataset_right
                         best_split["info_gain"] = curr_info_gain
-                        # max_info_gain = curr_info_gain
                         
-        # return best split
         return best_split
     
     def split(self, dataset, feature_index, threshold):
