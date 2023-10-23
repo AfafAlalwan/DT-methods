@@ -67,7 +67,6 @@ class NaiveTree:
                     y, left_y, right_y = dataset[:, -1], dataset_left[:, -1], dataset_right[:, -1]
                     # compute information gain
                     curr_info_gain = self.information_gain(y, left_y, right_y, "gini")
-                    # update the best split if needed
                     if curr_info_gain>best_split["info_gain"]:
                         best_split["feature_index"] = feature_index
                         best_split["threshold"] = threshold

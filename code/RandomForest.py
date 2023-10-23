@@ -45,9 +45,8 @@ class Forest(RandomForestClassifier):
         # Iterate through each tree in the ensemble.
         for tree in self.custom_trees:
             tree_prediction = tree.predict(X)
-            predictions += tree_prediction
+            predictions += tree_prediction.reshape(-1)
             final_predictions = predictions / self.n_estimators
-            final_predictions = final_predictions.reshape(-1,1)
             final_predictions = np.round(final_predictions).astype(int)
 
         return final_predictions

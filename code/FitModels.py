@@ -8,7 +8,7 @@ def FitModels(x_train,y_train,x_test=None,y_test=None,createTest=False):
     print(f"{type(x_train)} and {x_train.shape}")
     if x_test is None or y_test is None:
         x_train,x_test,y_train,y_test = train_test_split(x_train,y_train,train_size=0.2)
-        createTest = True
+        # createTest = True
 
     if createTest:#TODO: specify where to save these csv files
         train_output = "train.csv"
@@ -23,13 +23,13 @@ def FitModels(x_train,y_train,x_test=None,y_test=None,createTest=False):
 
     #TODO: decide how many forests and choose the best accuracy one to generate it in C
     testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=5, min_samples_split=3), name="RF")
+              Forest(tree_method='array',n_estimators=5,n_jobs=8,max_depth=5, min_samples_split=30), name="RF array")
     testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF2")
-    testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF3")
-    testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF4")
+              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=5), name="RF naive")
+    # testModel(x_train,y_train,x_test,y_test,
+    #           Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF3")
+    # testModel(x_train,y_train,x_test,y_test,
+    #           Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF4")
     # testModel(x_train,y_train,x_test,y_test,
     #           Forest(tree_method='naive',n_estimators=15,n_jobs=8,max_depth=5), name="RF3")
     # testModel(x_train,y_train,x_test,y_test,
