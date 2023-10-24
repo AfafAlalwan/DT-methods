@@ -23,21 +23,9 @@ def FitModels(x_train,y_train,x_test=None,y_test=None,createTest=False):
 
     #TODO: decide how many forests and choose the best accuracy one to generate it in C
     testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='array',n_estimators=5,n_jobs=8,max_depth=5, min_samples_split=30), name="RF array")
+              Forest(tree_method='array',n_estimators=10,n_jobs=8,max_depth=5, min_samples_split=20), name="RF array")
     testModel(x_train,y_train,x_test,y_test,
-              Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=5), name="RF naive")
-    # testModel(x_train,y_train,x_test,y_test,
-    #           Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF3")
-    # testModel(x_train,y_train,x_test,y_test,
-    #           Forest(tree_method='naive',n_estimators=5,n_jobs=8,max_depth=3), name="RF4")
-    # testModel(x_train,y_train,x_test,y_test,
-    #           Forest(tree_method='naive',n_estimators=15,n_jobs=8,max_depth=5), name="RF3")
-    # testModel(x_train,y_train,x_test,y_test,
-    #           Forest(tree_method='naive',n_estimators=20,n_jobs=8,max_depth=5), name="RF3")
-    # testModel(x_train,y_train,x_test,y_test,
-    #           Forest(tree_method='naive',n_estimators=25,n_jobs=8,max_depth=5), name="RF4")
-    # testModel(x_train,y_train,x_test,y_test,
-    #           Forest(tree_method='naive',n_estimators=30,n_jobs=8,max_depth=5), name="RF5")
+              Forest(tree_method='naive',n_estimators=10,n_jobs=8,max_depth=5), name="RF naive")
 
 def testModel(x_train,y_train,x_test,y_test,model,name):
     #fitting

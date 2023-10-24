@@ -6,9 +6,7 @@ class DTArr:
         # stopping conditions
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
-        self.root = None
         # Initialize arrays 
-        # Adjust the size according to the tree's depth
         self.features = []
         self.threshold = []
         self.child = []
@@ -85,19 +83,7 @@ class DTArr:
                         left_data = dataset_left
                         right_data = dataset_right
                         max_info_gain = curr_info_gain
-                # else:
-                #     print("meow")
-                #     best_feature = feature_index
-                #     best_threshold = self.delta
-                
-            # print(f"node : {self.node}, feature: {best_feature} and threshold {best_threshold} ")
 
-        # print(f"best feature: {best_feature} and best threshold: {best_threshold}" )
-        # if best_threshold is None or best_feature is None:
-        #     print(f"node : {self.node}, feature: {best_feature} and threshold {best_threshold} ")
-            
-        #     return self.delta, self.delta, None, None
-        
         return best_feature, best_threshold,left_data, right_data
 
 
@@ -154,7 +140,7 @@ class DTArr:
 
         print(f"{X.shape} and {Y.shape}")
         dataset = np.concatenate((X, Y), axis=1)
-        self.root = self.build_tree(dataset)
+        self.build_tree(dataset)
         
 
     def predict(self,X):
@@ -162,7 +148,7 @@ class DTArr:
         # print("PRINTING THE TREE")
         # self.print_tree()
         # print("****************")
-        preditions = [self.make_prediction(x, self.root) for x in X]
+        preditions = [self.make_prediction(x) for x in X]
         return np.array(preditions)
     
     def print_tree(self, node = 0):
@@ -176,7 +162,7 @@ class DTArr:
         node = node + 1
         self.print_tree(node)
 
-    def make_prediction(self, x, tree):
+    def make_prediction(self, x):
 
         # Initialize node and feature
         node = 0
@@ -187,7 +173,10 @@ class DTArr:
             if x[feature] <= self.threshold[node]:
                 node = self.child[2 * node + 1] # go left 
             else:
-                node = 2 if node == 0 else self.child[2 * node] # go right
+                if node == 0:
+                    node = 2
+                else:
+                    node = self.child[2 * node] # go right
 
             if node >= len(self.features):
                 break
@@ -195,6 +184,6 @@ class DTArr:
                 feature = self.features[node]
 
         # Get the class associated with the leaf node
-        predicted_class = self.child[node * 2] #should be the leaf node 
+        predicted_class = self.child[node * 2] 
 
         return predicted_class
