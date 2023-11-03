@@ -1,7 +1,8 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from code.NaiveTree import NaiveTree
-from code.DTArr import DTArr
+from .NaiveTree import NaiveTree
+from .DTArr import DTArr
+# from sklearn.base import is_classifier
 
 class Forest(RandomForestClassifier):
     def __init__(self, n_estimators=100, max_depth=2, min_samples_split=2,
@@ -11,7 +12,7 @@ class Forest(RandomForestClassifier):
         self.tree_method = tree_method
         self.custom_trees = []
     
-    def fit(self, x,y):
+    def fit(self, x,y, trees=None):
         # Dictionary of Methods 
         method_to_class = {
             'naive': NaiveTree,
@@ -28,7 +29,10 @@ class Forest(RandomForestClassifier):
         for _ in range(self.n_estimators):
             custom_tree = tree_class(max_depth=self.max_depth,
                                       min_samples_split=self.min_samples_split )
-            custom_tree.fit(X=x,Y=y)
+            if trees is None:
+                custom_tree.fit(X=x,Y=y)
+            else:
+                custom_tree.fit(trees[_].root)
             self.custom_trees.append(custom_tree)
 
 
@@ -45,8 +49,10 @@ class Forest(RandomForestClassifier):
         # Iterate through each tree in the ensemble.
         for tree in self.custom_trees:
             tree_prediction = tree.predict(X)
-            predictions += tree_prediction.reshape(-1)
+            tree_prediction = tree_prediction.reshape(-1)
+            predictions += tree_prediction
             final_predictions = predictions / self.n_estimators
+            # final_predictions = final_predictions.reshape(-1,1)
             final_predictions = np.round(final_predictions).astype(int)
 
         return final_predictions

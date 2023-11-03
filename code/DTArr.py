@@ -6,19 +6,32 @@ class DTArr:
         # stopping conditions
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
+        self.random_split = random_split
+
         # Initialize arrays 
         self.features = []
         self.threshold = []
         self.child = []
+
         self.delta = -1
-        self.random_split = random_split
-        self.node = 0 # increases with child index 
+
+        # global indexing variables
+        self.node = 0 # for building the tree from scratch - unused for now
+
+        self.child_index = 0
+        self.last_node = -1
+
+
+    # region Building the tree from scratch
 
     def build_tree(self,data, curr_depth=0):
  
         X, Y = data[:,:-1], data[:,-1].reshape(-1, 1)
         num_samples, num_features = np.shape(X)
         
+        # if self.features is None: #only first time to set array sizes
+        #     self.set_size(num_features)
+
         if(num_samples >= self.min_samples_split and curr_depth <= self.max_depth): 
 
             best_feature, best_threshold, left_data, right_data = self.get_best_split(dataset=data,num_samples=num_samples, num_features=num_features)
@@ -49,7 +62,6 @@ class DTArr:
         else:
             self.calculate_leaf_value(Y)
         
-
     def get_best_split(self, dataset, num_samples, num_features):
         ''' function to find the best split'''
 
@@ -83,9 +95,20 @@ class DTArr:
                         left_data = dataset_left
                         right_data = dataset_right
                         max_info_gain = curr_info_gain
+                # else:
+                #     print("meow")
+                #     best_feature = feature_index
+                #     best_threshold = self.delta
+                
+            # print(f"node : {self.node}, feature: {best_feature} and threshold {best_threshold} ")
 
+        # print(f"best feature: {best_feature} and best threshold: {best_threshold}" )
+        # if best_threshold is None or best_feature is None:
+        #     print(f"node : {self.node}, feature: {best_feature} and threshold {best_threshold} ")
+            
+        #     return self.delta, self.delta, None, None
+        
         return best_feature, best_threshold,left_data, right_data
-
 
     def split(self, dataset, feature_index, threshold):
             ''' function to split the data '''
@@ -135,48 +158,111 @@ class DTArr:
         self.child.append(leaf_value)
         self.child.append(leaf_value)
     
-    def fit(self,X,Y):
-        ''' function to train the tree '''
+    # def fit(self,X,Y):
+    #     ''' function to train the tree '''
 
-        print(f"{X.shape} and {Y.shape}")
-        dataset = np.concatenate((X, Y), axis=1)
-        self.build_tree(dataset)
+    #     print(f"{X.shape} and {Y.shape}")
+    #     dataset = np.concatenate((X, Y), axis=1)
+    #     self.root = self.build_tree(dataset)
+    # endregion  
+     
+
+    def fit(self, tree=None):
+        if tree is None:
+            return
+       
+        # get length of the features array to populate the child array with double its size
+        self.get_length(tree)
+        self.child = np.zeros(len(self.features)*2)
+        self.child = self.child.tolist()
+        self.features = []
+        # self.threshold = []
+        self.get_values(tree)
         
+
+    def get_values(self, tree, node=0):
+        ''' function to populate the arrays from a tree model '''
+        if tree is None:
+            return
+        
+        if tree.value is not None:
+            self.features.append(self.delta)
+            self.threshold.append(self.delta)
+            if node <= self.last_node:
+                node = self.last_node + 1
+            self.child[node] = tree.value
+            self.child[node + 1] = tree.value
+            self.last_node = node + 1
+
+        else:
+            self.features.append(tree.feature_index)
+            self.threshold.append(tree.threshold)
+
+
+            if node <= self.last_node:
+                self.last_node += 1
+                node = self.last_node
+
+            self.child_index += 1
+            left_child = 2 + node
+            right_child = 3 + node 
+
+            self.child[node] = self.child_index
+            self.get_values(tree.left, left_child)
+            self.child_index += 1
+            self.child[node + 1] = self.child_index
+            self.get_values(tree.right, right_child)
+            
+
+
+    def get_length(self, tree):
+        ''' function to get length of features array '''
+        if tree.value is not None:
+            self.features.append(self.delta)
+            # self.threshold.append(tree.value)
+        else: 
+            self.features.append(tree.feature_index)
+            # self.threshold.append(tree.threshold)
+            self.get_length(tree.left)
+            self.get_length(tree.right)
+    
 
     def predict(self,X):
         ''' function to predict with DT-Arr kernel '''
-        # print("PRINTING THE TREE")
-        # self.print_tree()
-        # print("****************")
+        print("PRINTING THE TREE")
+        self.print_tree()
+        print("****************")
         preditions = [self.make_prediction(x) for x in X]
         return np.array(preditions)
     
-    def print_tree(self, node = 0):
-        if node >= len(self.features):
-            return
+    def print_tree(self, tree=None, indent=" ", node=0):
+        ''' function to print the tree '''
+        
+        if self.features[node] == self.delta:
+            print(self.child[node * 2])
 
-        left_child = 2 * node 
-        right_child = 2 * node + 1    
+        else:
+            print("X_"+str(self.features[node]), "<=", self.threshold[node], "?") # , tree.info_gain
+            print("%sleft:" % (indent), end="")
+            left_child = 2 * node 
+            right_child = 2 * node + 1
+         
 
-        print(f"Node: {node}, Feature: {self.features[node]}, Threshold: {self.threshold[node]}, Left Child: {self.child[left_child]}, Right Child: {self.child[right_child]} \n")
-        node = node + 1
-        self.print_tree(node)
+            self.print_tree(node=self.child[left_child], indent=indent + indent) 
+            print("%sright:" % (indent), end="")
+            self.print_tree(node=self.child[right_child], indent=indent + indent)      
 
     def make_prediction(self, x):
 
-        # Initialize node and feature
         node = 0
         feature = self.features[node]
         
         # Main loop to traverse the decision tree
         while self.threshold[node] != self.delta:
             if x[feature] <= self.threshold[node]:
-                node = self.child[2 * node + 1] # go left 
+                node = self.child[2 * node ] # go left 
             else:
-                if node == 0:
-                    node = 2
-                else:
-                    node = self.child[2 * node] # go right
+                node = self.child[2 * node + 1] # go right
 
             if node >= len(self.features):
                 break
